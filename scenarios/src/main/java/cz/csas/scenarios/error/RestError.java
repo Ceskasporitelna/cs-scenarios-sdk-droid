@@ -1,4 +1,4 @@
-package cz.csas.scenarios.model.error;
+package cz.csas.scenarios.error;
 
 import cz.csas.scenarios.model.Response;
 
@@ -7,7 +7,7 @@ import cz.csas.scenarios.model.Response;
  * @since 18/08/2017
  */
 
-public class RestError extends BaseScenariosError {
+public class RestError extends ScenariosSDKError {
 
     public enum Kind {
         NETWORK,
@@ -18,11 +18,17 @@ public class RestError extends BaseScenariosError {
     private Response response;
 
     public RestError(Kind kind, Response response) {
+        super();
         this.kind = kind;
         this.response = response;
     }
 
     public RestError(Kind kind) {
+        this.kind = kind;
+    }
+
+    public RestError(String message, Throwable cause, Kind kind) {
+        super(message, cause);
         this.kind = kind;
     }
 
@@ -32,9 +38,5 @@ public class RestError extends BaseScenariosError {
 
     public Response getResponse() {
         return response;
-    }
-
-    public void setResponse(Response response) {
-        this.response = response;
     }
 }

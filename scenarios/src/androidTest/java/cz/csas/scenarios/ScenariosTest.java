@@ -1,14 +1,20 @@
 package cz.csas.scenarios;
 
 import android.support.test.runner.AndroidJUnit4;
+import android.util.Log;
 
 import org.junit.Before;
 import org.junit.runner.RunWith;
 
 import java.util.HashMap;
 import java.util.UUID;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 
+import cz.csas.scenarios.error.RestError;
+import cz.csas.scenarios.error.ScenariosSDKError;
 import cz.csas.scenarios.model.Environment;
+import cz.csas.scenarios.model.Method;
 import cz.csas.scenarios.model.WebApiConfiguration;
 
 /**
@@ -26,25 +32,53 @@ public abstract class ScenariosTest {
 
     protected WebApiConfiguration mWebApiConfiguration;
     protected ScenariosClient mScenariosClient;
-    protected WebApiClient mJudgeApiClient;
+    protected RestClient mJudgeApiClient;
 
     protected String mXJudgeCase;
     protected String mXJudgeSessionHeader;
+
+    protected HashMap<String, String> judgeHeaders;
+
 
     @Before
     public void setup() {
 
         mXJudgeSessionHeader = UUID.randomUUID().toString();
 
-        HashMap<String, String> judgeHeaders = new HashMap<>();
+        mWebApiConfiguration = new WebApiConfiguration(TEST_API_KEY, Environment.other(TEST_BASE_URL), TEST_API_TOKEN);
+
+        mScenariosClient = Scenarios.getInstance().init(mWebApiConfiguration).getScenariosClient();
+        mScenariosClient.addHeader("x-judge-session", mXJudgeSessionHeader);
+
+
+        // Judge
+        judgeHeaders = new HashMap<>();
         judgeHeaders.put("x-judge-session", mXJudgeSessionHeader);
         judgeHeaders.put("x-judge-case", mXJudgeCase);
 
-        mJudgeApiClient = new WebApiClient(new WebApiConfiguration(JUDGE_BASE_URL, judgeHeaders));
+        mJudgeApiClient = new RestClient(new WebApiConfiguration(JUDGE_BASE_URL));
+        mJudgeApiClient.setHeaders(judgeHeaders);
 
-        mWebApiConfiguration = new WebApiConfiguration(TEST_API_KEY, Environment.other(TEST_BASE_URL), TEST_API_TOKEN);
-        mWebApiConfiguration.getHeaders().put("x-judge-session", mXJudgeSessionHeader);
-        mScenariosClient = Scenarios.getInstance().init(mWebApiConfiguration).getScenariosClient();
+        // Make Judge a call and wait for it to finish
+        final CountDownLatch judgeSignal = new CountDownLatch(1);
+        mJudgeApiClient.makeWebRequest("/judge/nextCase", Method.POST, null, new Callback() {
+            @Override
+            public void success() {
+                Log.d("asdf", "judge success");
+                judgeSignal.countDown();
+            }
+
+            @Override
+            public void failure(ScenariosSDKError error) {
+                Log.d("asdf", ((RestError) error).getResponse().getBody());
+                judgeSignal.countDown();
+            }
+        });
+
+        try {
+            judgeSignal.await(20, TimeUnit.SECONDS);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
-
 }

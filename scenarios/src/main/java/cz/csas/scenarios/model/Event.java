@@ -32,32 +32,16 @@ public class Event {
         return eventTypeId;
     }
 
-    public void setEventTypeId(int eventTypeId) {
-        this.eventTypeId = eventTypeId;
-    }
-
     public EventType getEventType() {
         return eventType;
-    }
-
-    public void setEventType(EventType eventType) {
-        this.eventType = eventType;
     }
 
     public int getApplicationId() {
         return applicationId;
     }
 
-    public void setApplicationId(int applicationId) {
-        this.applicationId = applicationId;
-    }
-
     public String getApplication() {
         return application;
-    }
-
-    public void setApplication(String application) {
-        this.application = application;
     }
 
     public Date getEventCreation() {
@@ -72,15 +56,56 @@ public class Event {
         return clientId;
     }
 
-    public void setClientId(String clientId) {
-        this.clientId = clientId;
-    }
-
     public Values getValues() {
         return values;
     }
 
-    public void setValues(Values values) {
-        this.values = values;
+    public static class Builder {
+        private int eventTypeId;
+        private EventType eventType;
+        private int applicationId;
+        private String application;
+        private Date eventCreation;
+        private String clientId;
+        private Values values;
+
+        public Builder setEventTypeId(int eventTypeId) {
+            this.eventTypeId = eventTypeId;
+            return this;
+        }
+
+        public Builder setEventType(EventType eventType) {
+            this.eventType = eventType;
+            return this;
+        }
+
+        public Builder setApplicationId(int applicationId) {
+            this.applicationId = applicationId;
+            return this;
+        }
+
+        public Builder setApplication(String application) {
+            this.application = application;
+            return this;
+        }
+
+        public Builder setEventCreation(Date eventCreation) {
+            this.eventCreation = eventCreation;
+            return this;
+        }
+
+        public Builder setClientId(String clientId) {
+            this.clientId = clientId;
+            return this;
+        }
+
+        public Builder setValues(Values values) {
+            this.values = values;
+            return this;
+        }
+
+        public Event create() {
+            return new Event(eventTypeId, eventType, applicationId, application, eventCreation, clientId, values);
+        }
     }
 }

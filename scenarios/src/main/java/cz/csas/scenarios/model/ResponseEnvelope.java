@@ -1,15 +1,15 @@
 package cz.csas.scenarios.model;
 
-import cz.csas.scenarios.model.error.BaseScenariosError;
+import cz.csas.scenarios.error.ScenariosSDKError;
 
 /**
  * @author Petr Kubes <petr.kubes@applifting.cz>
  * @since 18/08/2017
  */
 
-public class ResponseContainer {
+public class ResponseEnvelope {
     private Response response;
-    private BaseScenariosError error;
+    private ScenariosSDKError error;
 
     public Response getResponse() {
         return response;
@@ -19,11 +19,11 @@ public class ResponseContainer {
         this.response = response;
     }
 
-    public BaseScenariosError getError() {
+    public ScenariosSDKError getError() {
         return error;
     }
 
-    public void setError(BaseScenariosError error) {
+    public void setError(ScenariosSDKError error) {
         this.error = error;
     }
 }

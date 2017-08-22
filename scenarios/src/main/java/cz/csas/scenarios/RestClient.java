@@ -11,40 +11,45 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.HashMap;
 import java.util.Map;
 
 import javax.net.ssl.HttpsURLConnection;
 
+import cz.csas.scenarios.error.RestError;
+import cz.csas.scenarios.model.Method;
 import cz.csas.scenarios.model.Response;
-import cz.csas.scenarios.model.ResponseContainer;
+import cz.csas.scenarios.model.ResponseEnvelope;
 import cz.csas.scenarios.model.WebApiConfiguration;
-import cz.csas.scenarios.model.error.RestError;
 
 /**
  * @author Petr Kubes <petr.kubes@applifting.cz>
  * @since 17/08/2017
  */
 
-public class WebApiClient {
+public class RestClient {
 
-    static final String POST = "POST";
+    private static final String POST = "POST";
+    private static final String PUT = "PUT";
+    private static final String GET = "GET";
+    private static final String DELETE = "DELETE";
 
     private WebApiConfiguration mWebApiConfiguration;
+    private HashMap<String, String> mHeaders;
 
-    public WebApiClient(WebApiConfiguration webApiConfiguration) {
+    public RestClient(WebApiConfiguration webApiConfiguration) {
         mWebApiConfiguration = webApiConfiguration;
     }
 
-    public void callApi(final String path, final String method, final Object body, final ApiCallback callback) {
-
-        class DownloadTask extends AsyncTask<Void, Void, ResponseContainer> {
+    public void makeWebRequest(final String path, final Method method, final Object body, final Callback callback) {
+        class DownloadTask extends AsyncTask<Void, Void, ResponseEnvelope> {
             @Override
-            protected ResponseContainer doInBackground(Void... Void) {
+            protected ResponseEnvelope doInBackground(Void... Void) {
                 return webRequest(path, method, body);
             }
 
             @Override
-            protected void onPostExecute(ResponseContainer responseContainer) {
+            protected void onPostExecute(ResponseEnvelope responseContainer) {
                 if (responseContainer.getError() == null) {
                     callback.success();
                 } else {
@@ -56,12 +61,12 @@ public class WebApiClient {
         new DownloadTask().execute();
     }
 
-    private ResponseContainer webRequest(String path, String method, Object body) {
+    private ResponseEnvelope webRequest(String path, Method method, Object body) {
 
         HttpURLConnection connection = null;
         String result = null;
         Gson gson = new GsonBuilder().setDateFormat("yyyy-MM-dd'T'HH:mm:ssZ").create();
-        ResponseContainer responseContainer = new ResponseContainer();
+        ResponseEnvelope responseEnvelope = new ResponseEnvelope();
 
         try {
             URL url = new URL(mWebApiConfiguration.getBaseApiURL() + path);
@@ -74,10 +79,25 @@ public class WebApiClient {
 
             connection.setReadTimeout(3000);
             connection.setConnectTimeout(3000);
-            connection.setRequestMethod(method);
+
+            switch (method) {
+                case GET:
+                    connection.setRequestMethod(GET);
+                    break;
+                case POST:
+                    connection.setRequestMethod(POST);
+                    break;
+                case PUT:
+                    connection.setRequestMethod(PUT);
+                    break;
+                case DELETE:
+                    connection.setRequestMethod(DELETE);
+                    break;
+            }
+
 
             // Set headers
-            for (Map.Entry<String, String> header : mWebApiConfiguration.getHeaders().entrySet()) {
+            for (Map.Entry<String, String> header : mHeaders.entrySet()) {
                 connection.setRequestProperty(header.getKey(), header.getValue());
             }
 
@@ -96,22 +116,34 @@ public class WebApiClient {
                 result = readStream(connection.getInputStream());
             } else {
                 result = readStream(connection.getErrorStream());
-                responseContainer.setError(new RestError(RestError.Kind.HTTP, new Response(connection.getResponseCode(), result)));
+                responseEnvelope.setError(new RestError(RestError.Kind.HTTP, new Response(connection.getResponseCode(), result)));
             }
 
             connection.connect();
 
-            responseContainer.setResponse(new Response(connection.getResponseCode(), result));
+            responseEnvelope.setResponse(new Response(connection.getResponseCode(), result));
 
         } catch (IOException e) {
-            responseContainer.setError(new RestError(RestError.Kind.NETWORK));
+            responseEnvelope.setError(new RestError(e.getMessage(), e.getCause(), RestError.Kind.NETWORK));
         } finally {
             if (connection != null) {
                 connection.disconnect();
             }
         }
 
-        return responseContainer;
+        return responseEnvelope;
+    }
+
+    public void setHeaders(HashMap<String, String> mHeaders) {
+        this.mHeaders = mHeaders;
+    }
+
+    public void addHeader(String key, String value) {
+        if (mHeaders == null) {
+            mHeaders = new HashMap<>();
+        }
+
+        mHeaders.put(key, value);
     }
 
     /**

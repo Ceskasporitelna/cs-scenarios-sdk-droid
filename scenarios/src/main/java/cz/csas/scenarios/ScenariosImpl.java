@@ -1,6 +1,6 @@
 package cz.csas.scenarios;
 
-import cz.csas.scenarios.model.error.ScenariosError;
+import cz.csas.scenarios.error.ScenariosError;
 import cz.csas.scenarios.model.WebApiConfiguration;
 
 /**
@@ -8,7 +8,7 @@ import cz.csas.scenarios.model.WebApiConfiguration;
  * @since 17/08/2017
  */
 
-public class ScenariosImpl extends Scenarios {
+class ScenariosImpl extends Scenarios {
 
     private ScenariosClient scenariosClient;
 

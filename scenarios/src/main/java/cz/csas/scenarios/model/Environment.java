@@ -13,7 +13,7 @@ public enum Environment {
 
     public static Environment other(String url) {
         Environment other = Environment.OTHER;
-        other.setUrl(url);
+        other.url = url;
         return other;
     }
 
@@ -25,9 +25,5 @@ public enum Environment {
 
     public String getUrl() {
         return url;
-    }
-
-    public void setUrl(String url) {
-        this.url = url;
     }
 }

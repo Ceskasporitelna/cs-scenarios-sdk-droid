@@ -3,6 +3,7 @@ package cz.csas.scenarios;
 import java.util.ArrayList;
 
 import cz.csas.scenarios.model.Event;
+import cz.csas.scenarios.model.Method;
 
 /**
  * @author Petr Kubes <petr.kubes@applifting.cz>
@@ -11,19 +12,29 @@ import cz.csas.scenarios.model.Event;
 
 public class EventsResource {
 
-    private WebApiClient mWebApiClient;
+    private ScenariosClient mScenarioClient;
     private String mBasePath;
 
-    public EventsResource(String basePath, WebApiClient webApiClient) {
-        mWebApiClient = webApiClient;
+    public EventsResource(String basePath, ScenariosClient restClient) {
+        mScenarioClient = restClient;
         mBasePath = basePath;
     }
 
-    public void postSingle(Event event, ApiCallback callback) {
-        mWebApiClient.callApi(mBasePath + "/single", WebApiClient.POST, event, callback);
+    public void postSingle(Event event, Callback callback) {
+        mScenarioClient.makeWebRequest(appendPathWith("single"), Method.POST, event, callback);
     }
 
-    public void postCollection(ArrayList<Event> events, ApiCallback callback) {
-        mWebApiClient.callApi(mBasePath + "/collection", WebApiClient.POST, events, callback);
+    public void postCollection(ArrayList<Event> events, Callback callback) {
+        mScenarioClient.makeWebRequest(appendPathWith("collection"), Method.POST, events, callback);
+    }
+
+    public String getBasePath() {
+        return mBasePath;
+    }
+
+    protected String appendPathWith(String appendix){
+        if(appendix == null)
+            return mBasePath;
+        return mBasePath + "/" + appendix;
     }
 }

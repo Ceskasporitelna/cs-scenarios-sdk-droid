@@ -9,12 +9,12 @@ import java.util.Date;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
-import cz.csas.scenarios.model.error.BaseScenariosError;
+import cz.csas.scenarios.error.RestError;
+import cz.csas.scenarios.error.ScenariosSDKError;
 import cz.csas.scenarios.model.Account;
 import cz.csas.scenarios.model.Event;
 import cz.csas.scenarios.model.EventType;
 import cz.csas.scenarios.model.Values;
-import cz.csas.scenarios.model.error.RestError;
 
 import static junit.framework.Assert.assertEquals;
 
@@ -26,34 +26,15 @@ import static junit.framework.Assert.assertEquals;
 public class ScenariosPostCollectionTest extends ScenariosTest {
 
     private final String X_JUDGE_CASE_SCENARIOS_POST_SINGLE = "scenarios.events.post.collection";
-
     private CountDownLatch scenarioSignal;
+    private boolean success;
 
     @Override
     public void setup() {
         mXJudgeCase = X_JUDGE_CASE_SCENARIOS_POST_SINGLE;
         super.setup();
 
-        scenarioSignal = new CountDownLatch(1);
-
-        // Make a Judge call and wait for it to finish
-        final CountDownLatch judgeSignal = new CountDownLatch(1);
-        mJudgeApiClient.callApi("/judge/nextCase", WebApiClient.POST, null, new ApiCallback() {
-            @Override
-            public void success() {
-                judgeSignal.countDown();
-            }
-
-            @Override
-            public void failure(BaseScenariosError error) {
-
-            }
-        });
-        try {
-            judgeSignal.await(20, TimeUnit.SECONDS);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+        success = false;
     }
 
     @Test
@@ -61,22 +42,22 @@ public class ScenariosPostCollectionTest extends ScenariosTest {
 
         ArrayList<Account> accounts = new ArrayList<>();
         accounts.add(new Account("csas"));
-        final boolean[] success = {false};
 
         Event event = new Event(1, EventType.LoadURI, 1, "Penize na klik",  new Date(1393512305L * 1000), "2015", new Values("www.csas.cz/getAccounts", accounts));
 
         ArrayList<Event> events = new ArrayList<>();
         events.add(event);
 
-        mScenariosClient.getEventsResource().postCollection(events, new ApiCallback() {
+        scenarioSignal = new CountDownLatch(1);
+        mScenariosClient.getEventsResource().postCollection(events, new Callback() {
             @Override
             public void success() {
-                success[0] = true;
+                success = true;
                 scenarioSignal.countDown();
             }
 
             @Override
-            public void failure(BaseScenariosError error) {
+            public void failure(ScenariosSDKError error) {
                 if (error instanceof RestError) {
                     RestError restError = (RestError) error;
                     if (restError.getResponse() != null) {
@@ -94,6 +75,6 @@ public class ScenariosPostCollectionTest extends ScenariosTest {
             e.printStackTrace();
         }
 
-        assertEquals(true, success[0]);
+        assertEquals(true, success);
     }
 }
