@@ -1,7 +1,8 @@
 package cz.csas.scenarios;
 
-import java.util.ArrayList;
+import java.util.List;
 
+import cz.csas.scenarios.model.Callback;
 import cz.csas.scenarios.model.Event;
 import cz.csas.scenarios.model.Method;
 
@@ -44,7 +45,7 @@ public class EventsResource {
      * @param events   the events
      * @param callback the callback
      */
-    public void postCollection(ArrayList<Event> events, Callback callback) {
+    public void postCollection(List<Event> events, Callback callback) {
         mScenarioClient.callApi(appendPathWith("collection"), Method.POST, events, callback);
     }
 

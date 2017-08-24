@@ -5,13 +5,14 @@ import android.support.test.runner.AndroidJUnit4;
 import org.junit.Before;
 import org.junit.runner.RunWith;
 
-import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
 import cz.csas.scenarios.error.CsScenariosSDKError;
+import cz.csas.scenarios.model.Callback;
 import cz.csas.scenarios.model.Environment;
 import cz.csas.scenarios.model.Method;
 import cz.csas.scenarios.model.WebApiConfiguration;
@@ -27,7 +28,6 @@ public abstract class ScenariosTest {
     private final String TEST_BASE_URL = "http://csas-judge.herokuapp.com/webapi";
     private final String JUDGE_BASE_URL = "http://csas-judge.herokuapp.com";
     private final String TEST_API_KEY = "TEST_API_KEY";
-    private final String TEST_LANGUAGE = "cs-CZ";
     private final String TEST_API_TOKEN = "Bearer token";
 
     protected WebApiConfiguration mWebApiConfiguration;
@@ -45,7 +45,10 @@ public abstract class ScenariosTest {
 
         mXJudgeSessionHeader = UUID.randomUUID().toString();
 
-        mWebApiConfiguration = new WebApiConfiguration(TEST_API_KEY, Environment.other(TEST_BASE_URL), TEST_LANGUAGE, TEST_API_TOKEN);
+        mWebApiConfiguration = new WebApiConfiguration.Builder().setWebApiKey(TEST_API_KEY)
+                .setEnvironment(Environment.other(TEST_BASE_URL))
+                .setAuthorizationToken(TEST_API_TOKEN)
+                .create();
 
         mScenariosClient = Scenarios.getInstance().init(mWebApiConfiguration).getScenariosClient();
         mScenariosClient.addHeader("x-judge-session", mXJudgeSessionHeader);
@@ -82,9 +85,9 @@ public abstract class ScenariosTest {
     protected class Values {
 
         private String uri;
-        private ArrayList<Account> accounts;
+        private List<Account> accounts;
 
-        protected Values(String uri, ArrayList<Account> accounts) {
+        protected Values(String uri, List<Account> accounts) {
             this.uri = uri;
             this.accounts = accounts;
         }

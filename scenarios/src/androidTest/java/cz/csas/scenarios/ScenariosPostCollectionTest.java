@@ -11,6 +11,7 @@ import java.util.concurrent.TimeUnit;
 
 import cz.csas.scenarios.error.CsRestError;
 import cz.csas.scenarios.error.CsScenariosSDKError;
+import cz.csas.scenarios.model.Callback;
 import cz.csas.scenarios.model.Event;
 import cz.csas.scenarios.model.EventType;
 

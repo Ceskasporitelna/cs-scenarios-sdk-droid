@@ -1,4 +1,4 @@
-package cz.csas.scenarios;
+package cz.csas.scenarios.model;
 
 import cz.csas.scenarios.error.CsScenariosSDKError;
 

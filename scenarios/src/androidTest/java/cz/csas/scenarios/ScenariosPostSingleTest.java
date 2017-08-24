@@ -2,12 +2,13 @@ package cz.csas.scenarios;
 
 import org.junit.Test;
 
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
 import cz.csas.scenarios.error.CsScenariosSDKError;
+import cz.csas.scenarios.model.Callback;
 import cz.csas.scenarios.model.Event;
 import cz.csas.scenarios.model.EventType;
 
@@ -34,10 +35,14 @@ public class ScenariosPostSingleTest extends ScenariosTest {
     @Test
     public void testScenarioPostSingle() {
 
-        ArrayList<Account> accounts = new ArrayList<>();
-        accounts.add(new Account("csas"));
-
-        Event event = new Event(1, EventType.LOAD_URI, 1, "Penize na klik", new Date(1393512305L * 1000), "2015", new Values("www.csas.cz/getAccounts", accounts));
+        Event event = new Event.Builder().setEventTypeId(1)
+                .setEventType(EventType.LOAD_URI)
+                .setApplicationId(1)
+                .setApplication("Penize na klik")
+                .setEventCreation(new Date(1393512305L * 1000))
+                .setClientId("2015")
+                .setValues(new Values("www.csas.cz/getAccounts", Collections.singletonList(new Account("csas"))))
+                .create();
 
         scenarioSignal = new CountDownLatch(1);
         mScenariosClient.getEventsResource().postSingle(event, new Callback() {

@@ -17,6 +17,7 @@ import java.util.Map;
 import javax.net.ssl.HttpsURLConnection;
 
 import cz.csas.scenarios.error.CsRestError;
+import cz.csas.scenarios.model.Callback;
 import cz.csas.scenarios.model.Method;
 import cz.csas.scenarios.model.Response;
 import cz.csas.scenarios.model.ResponseEnvelope;
