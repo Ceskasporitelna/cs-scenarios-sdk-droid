@@ -1,6 +1,6 @@
 package cz.csas.scenarios.model;
 
-import cz.csas.scenarios.error.ScenariosSDKError;
+import cz.csas.scenarios.error.CsScenariosSDKError;
 
 /**
  * @author Petr Kubes <petr.kubes@applifting.cz>
@@ -8,8 +8,9 @@ import cz.csas.scenarios.error.ScenariosSDKError;
  */
 
 public class ResponseEnvelope {
+
     private Response response;
-    private ScenariosSDKError error;
+    private CsScenariosSDKError error;
 
     public Response getResponse() {
         return response;
@@ -19,11 +20,11 @@ public class ResponseEnvelope {
         this.response = response;
     }
 
-    public ScenariosSDKError getError() {
+    public CsScenariosSDKError getError() {
         return error;
     }
 
-    public void setError(ScenariosSDKError error) {
+    public void setError(CsScenariosSDKError error) {
         this.error = error;
     }
 }

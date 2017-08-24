@@ -16,39 +16,38 @@ import java.util.Map;
 
 import javax.net.ssl.HttpsURLConnection;
 
-import cz.csas.scenarios.error.RestError;
+import cz.csas.scenarios.error.CsRestError;
 import cz.csas.scenarios.model.Method;
 import cz.csas.scenarios.model.Response;
 import cz.csas.scenarios.model.ResponseEnvelope;
-import cz.csas.scenarios.model.WebApiConfiguration;
 
 /**
  * @author Petr Kubes <petr.kubes@applifting.cz>
  * @since 17/08/2017
  */
 
-public class RestClient {
+class RestClient {
 
     protected final String HEADER_ACCEPT = "accept";
     protected final String HEADER_CONTENT_TYPE = "content-type";
     protected final String HEADER_AUTHORIZATION = "authorization";
     protected final String HEADER_ACCEPT_LANGUAGE = "accept-language";
 
-    private WebApiConfiguration mWebApiConfiguration;
+    private String mBaseUrl;
     private HashMap<String, String> mHeaders;
 
-    public RestClient(WebApiConfiguration webApiConfiguration) {
-        mWebApiConfiguration = webApiConfiguration;
+    public RestClient(String baseUrl) {
+        mBaseUrl = baseUrl;
         mHeaders = new HashMap<>();
         mHeaders.put(HEADER_ACCEPT, "application/json;charset=UTF-8");
         mHeaders.put(HEADER_CONTENT_TYPE, "application/json;charset=UTF-8");
     }
 
-    public void makeWebRequest(final String path, final Method method, final Object body, final Callback callback) {
+    public void callApi(final String path, final Method method, final Object body, final Callback callback) {
         class DownloadTask extends AsyncTask<Void, Void, ResponseEnvelope> {
             @Override
             protected ResponseEnvelope doInBackground(Void... Void) {
-                return webRequest(path, method, body);
+                return callApi(path, method, body);
             }
 
             @Override
@@ -64,15 +63,27 @@ public class RestClient {
         new DownloadTask().execute();
     }
 
-    private ResponseEnvelope webRequest(String path, Method method, Object body) {
+    public void addHeader(String key, String value) {
+        if (mHeaders == null) {
+            mHeaders = new HashMap<>();
+        }
+        mHeaders.put(key, value);
+    }
+
+    public void setHeaders(HashMap<String, String> mHeaders) {
+        this.mHeaders = mHeaders;
+    }
+
+    private ResponseEnvelope callApi(String path, Method method, Object body) {
 
         HttpURLConnection connection = null;
-        String result = null;
+        String result;
         Gson gson = new GsonBuilder().setDateFormat("yyyy-MM-dd'T'HH:mm:ssZ").create();
         ResponseEnvelope responseEnvelope = new ResponseEnvelope();
+        String urlSpec = mBaseUrl + path;
 
         try {
-            URL url = new URL(mWebApiConfiguration.getBaseApiURL() + path);
+            URL url = new URL(urlSpec);
 
             if (url.toString().startsWith("https")) {
                 connection = (HttpsURLConnection) url.openConnection();
@@ -85,16 +96,16 @@ public class RestClient {
 
             switch (method) {
                 case GET:
-                    connection.setRequestMethod(method.getValue());
+                    connection.setRequestMethod(method.name());
                     break;
                 case POST:
-                    connection.setRequestMethod(method.getValue());
+                    connection.setRequestMethod(method.name());
                     break;
                 case PUT:
-                    connection.setRequestMethod(method.getValue());
+                    connection.setRequestMethod(method.name());
                     break;
                 case DELETE:
-                    connection.setRequestMethod(method.getValue());
+                    connection.setRequestMethod(method.name());
                     break;
             }
 
@@ -113,21 +124,19 @@ public class RestClient {
             outputStream.write(bytes);
             outputStream.close();
 
-            InputStream inputStream = null;
-
             if (connection.getResponseCode() >= 200 && connection.getResponseCode() < 300) {
                 result = readStream(connection.getInputStream());
             } else {
                 result = readStream(connection.getErrorStream());
-                responseEnvelope.setError(new RestError(RestError.Kind.HTTP, new Response(connection.getResponseCode(), result)));
+                responseEnvelope.setError(CsRestError.httpError(urlSpec, new Response(connection.getResponseCode(), result)));
             }
 
             connection.connect();
 
             responseEnvelope.setResponse(new Response(connection.getResponseCode(), result));
 
-        } catch (IOException e) {
-            responseEnvelope.setError(new RestError(e.getMessage(), e.getCause(), RestError.Kind.NETWORK));
+        } catch (IOException exception) {
+            responseEnvelope.setError(CsRestError.networkError(urlSpec, exception));
         } finally {
             if (connection != null) {
                 connection.disconnect();
@@ -135,18 +144,6 @@ public class RestClient {
         }
 
         return responseEnvelope;
-    }
-
-    public void setHeaders(HashMap<String, String> mHeaders) {
-        this.mHeaders = mHeaders;
-    }
-
-    public void addHeader(String key, String value) {
-        if (mHeaders == null) {
-            mHeaders = new HashMap<>();
-        }
-
-        mHeaders.put(key, value);
     }
 
     /**

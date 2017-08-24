@@ -1,6 +1,6 @@
 package cz.csas.scenarios;
 
-import cz.csas.scenarios.error.ScenariosSDKError;
+import cz.csas.scenarios.error.CsScenariosSDKError;
 
 /**
  * @author Petr Kubes <petr.kubes@applifting.cz>
@@ -11,5 +11,5 @@ public interface Callback {
 
     void success();
 
-    void failure(ScenariosSDKError error);
+    void failure(CsScenariosSDKError error);
 }

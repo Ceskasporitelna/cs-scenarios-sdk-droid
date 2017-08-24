@@ -6,6 +6,7 @@ package cz.csas.scenarios.model;
  */
 
 public class Response {
+
     private int code;
     private String body;
 

@@ -11,19 +11,19 @@ public enum Environment {
     SYSTEM_TEST("http://www.csast.csas.cz/webapi"),
     OTHER(null);
 
-    public static Environment other(String url) {
+    public static Environment other(String baseUrl) {
         Environment other = Environment.OTHER;
-        other.url = url;
+        other.baseUrl = baseUrl;
         return other;
     }
 
-    private String url;
+    private String baseUrl;
 
-    Environment(String url) {
-        this.url = url;
+    Environment(String baseUrl) {
+        this.baseUrl = baseUrl;
     }
 
-    public String getUrl() {
-        return url;
+    public String getBaseUrl() {
+        return baseUrl;
     }
 }

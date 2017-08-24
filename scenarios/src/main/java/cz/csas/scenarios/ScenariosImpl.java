@@ -1,6 +1,6 @@
 package cz.csas.scenarios;
 
-import cz.csas.scenarios.error.ScenariosError;
+import cz.csas.scenarios.error.CsScenariosError;
 import cz.csas.scenarios.model.WebApiConfiguration;
 
 /**
@@ -21,7 +21,7 @@ class ScenariosImpl extends Scenarios {
     @Override
     public ScenariosClient getScenariosClient() {
         if (scenariosClient == null) {
-            throw new ScenariosError(ScenariosError.Kind.NOT_INITIALIZED);
+            throw new CsScenariosError(CsScenariosError.Kind.NOT_INITIALIZED);
         }
         return scenariosClient;
     }

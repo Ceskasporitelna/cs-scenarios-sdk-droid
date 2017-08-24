@@ -7,13 +7,12 @@ import java.util.Date;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
-import cz.csas.scenarios.error.ScenariosSDKError;
-import cz.csas.scenarios.model.Account;
+import cz.csas.scenarios.error.CsScenariosSDKError;
 import cz.csas.scenarios.model.Event;
 import cz.csas.scenarios.model.EventType;
-import cz.csas.scenarios.model.Values;
 
 import static junit.framework.TestCase.assertEquals;
+
 /**
  * @author Petr Kubes <petr.kubes@applifting.cz>
  * @since 18/08/2017
@@ -38,7 +37,7 @@ public class ScenariosPostSingleTest extends ScenariosTest {
         ArrayList<Account> accounts = new ArrayList<>();
         accounts.add(new Account("csas"));
 
-        Event event = new Event(1, EventType.LoadURI, 1, "Penize na klik", new Date(1393512305L * 1000), "2015", new Values("www.csas.cz/getAccounts", accounts));
+        Event event = new Event(1, EventType.LOAD_URI, 1, "Penize na klik", new Date(1393512305L * 1000), "2015", new Values("www.csas.cz/getAccounts", accounts));
 
         scenarioSignal = new CountDownLatch(1);
         mScenariosClient.getEventsResource().postSingle(event, new Callback() {
@@ -49,7 +48,7 @@ public class ScenariosPostSingleTest extends ScenariosTest {
             }
 
             @Override
-            public void failure(ScenariosSDKError error) {
+            public void failure(CsScenariosSDKError error) {
                 scenarioSignal.countDown();
             }
         });

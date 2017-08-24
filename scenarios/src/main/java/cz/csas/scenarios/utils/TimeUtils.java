@@ -1,4 +1,4 @@
-package cz.csas.scenarios;
+package cz.csas.scenarios.utils;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -10,7 +10,7 @@ import java.util.Locale;
  * @since 18/08/2017
  */
 
-public class Utils {
+public class TimeUtils {
     final static int COLON_INDEX = 22;
 
     public static Date getISO8601Date(String time) {
