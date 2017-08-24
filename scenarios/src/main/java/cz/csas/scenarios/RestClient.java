@@ -29,16 +29,19 @@ import cz.csas.scenarios.model.WebApiConfiguration;
 
 public class RestClient {
 
-    private static final String POST = "POST";
-    private static final String PUT = "PUT";
-    private static final String GET = "GET";
-    private static final String DELETE = "DELETE";
+    protected final String HEADER_ACCEPT = "accept";
+    protected final String HEADER_CONTENT_TYPE = "content-type";
+    protected final String HEADER_AUTHORIZATION = "authorization";
+    protected final String HEADER_ACCEPT_LANGUAGE = "accept-language";
 
     private WebApiConfiguration mWebApiConfiguration;
     private HashMap<String, String> mHeaders;
 
     public RestClient(WebApiConfiguration webApiConfiguration) {
         mWebApiConfiguration = webApiConfiguration;
+        mHeaders = new HashMap<>();
+        mHeaders.put(HEADER_ACCEPT, "application/json;charset=UTF-8");
+        mHeaders.put(HEADER_CONTENT_TYPE, "application/json;charset=UTF-8");
     }
 
     public void makeWebRequest(final String path, final Method method, final Object body, final Callback callback) {
@@ -82,16 +85,16 @@ public class RestClient {
 
             switch (method) {
                 case GET:
-                    connection.setRequestMethod(GET);
+                    connection.setRequestMethod(method.getValue());
                     break;
                 case POST:
-                    connection.setRequestMethod(POST);
+                    connection.setRequestMethod(method.getValue());
                     break;
                 case PUT:
-                    connection.setRequestMethod(PUT);
+                    connection.setRequestMethod(method.getValue());
                     break;
                 case DELETE:
-                    connection.setRequestMethod(DELETE);
+                    connection.setRequestMethod(method.getValue());
                     break;
             }
 

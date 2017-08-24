@@ -32,7 +32,7 @@ public class EventsResource {
         return mBasePath;
     }
 
-    protected String appendPathWith(String appendix){
+    private String appendPathWith(String appendix){
         if(appendix == null)
             return mBasePath;
         return mBasePath + "/" + appendix;
