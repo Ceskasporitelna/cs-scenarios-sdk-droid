@@ -3,7 +3,6 @@ package cz.csas.scenarios;
 import org.junit.Test;
 
 import java.util.Collections;
-import java.util.Date;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
@@ -11,6 +10,7 @@ import cz.csas.scenarios.error.CsScenariosSDKError;
 import cz.csas.scenarios.model.Callback;
 import cz.csas.scenarios.model.Event;
 import cz.csas.scenarios.model.EventType;
+import cz.csas.scenarios.utils.TimeUtils;
 
 import static junit.framework.TestCase.assertEquals;
 
@@ -39,7 +39,7 @@ public class ScenariosPostSingleTest extends ScenariosTest {
                 .setEventType(EventType.LOAD_URI)
                 .setApplicationId(1)
                 .setApplication("Penize na klik")
-                .setEventCreation(new Date(1393512305L * 1000))
+                .setEventCreation(TimeUtils.getISO8601Date("2014-02-27T15:45:05+01:00"))
                 .setClientId("2015")
                 .setValues(new Values("www.csas.cz/getAccounts", Collections.singletonList(new Account("csas"))))
                 .create();

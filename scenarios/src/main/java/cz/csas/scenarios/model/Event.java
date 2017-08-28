@@ -167,6 +167,19 @@ public class Event {
         this.values = values;
     }
 
+    @Override
+    public String toString() {
+        return "Event{" +
+                "eventTypeId=" + eventTypeId +
+                ", eventType='" + eventType + '\'' +
+                ", applicationId=" + applicationId +
+                ", application='" + application + '\'' +
+                ", eventCreation='" + eventCreation + '\'' +
+                ", clientId='" + clientId + '\'' +
+                ", values=" + values +
+                '}';
+    }
+
     public static class Builder {
         private int eventTypeId;
         private EventType eventType;

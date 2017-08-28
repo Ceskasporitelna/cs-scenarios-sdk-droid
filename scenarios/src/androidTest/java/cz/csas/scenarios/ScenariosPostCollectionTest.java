@@ -5,7 +5,6 @@ import android.util.Log;
 import org.junit.Test;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
@@ -14,6 +13,7 @@ import cz.csas.scenarios.error.CsScenariosSDKError;
 import cz.csas.scenarios.model.Callback;
 import cz.csas.scenarios.model.Event;
 import cz.csas.scenarios.model.EventType;
+import cz.csas.scenarios.utils.TimeUtils;
 
 import static junit.framework.Assert.assertEquals;
 
@@ -42,7 +42,7 @@ public class ScenariosPostCollectionTest extends ScenariosTest {
         ArrayList<Account> accounts = new ArrayList<>();
         accounts.add(new Account("csas"));
 
-        Event event = new Event(1, EventType.LOAD_URI, 1, "Penize na klik",  new Date(1393512305L * 1000), "2015", new Values("www.csas.cz/getAccounts", accounts));
+        Event event = new Event(1, EventType.LOAD_URI, 1, "Penize na klik", TimeUtils.getISO8601Date("2014-02-27T15:45:05+01:00"), "2015", new Values("www.csas.cz/getAccounts", accounts));
 
         ArrayList<Event> events = new ArrayList<>();
         events.add(event);
