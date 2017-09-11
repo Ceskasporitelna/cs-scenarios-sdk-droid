@@ -1,4 +1,8 @@
+import groovy.json.JsonBuilder
+import groovy.json.JsonSlurper
+
 apply plugin: 'com.android.library'
+apply plugin: 'com.github.dcendents.android-maven'
 
 android {
     compileSdkVersion 26
@@ -32,6 +36,47 @@ dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs') // gson jar
     androidTestCompile 'junit:junit:4.12'
     androidTestCompile 'com.android.support.test:rules:0.5'
+}
+
+// maven pom specs
+
+group = 'cz.csas'
+version = readVersionName()
+
+install {
+    repositories.mavenInstaller {
+        // This generates POM.xml with proper parameters
+        pom {
+            project {
+                packaging 'aar'
+
+                // Add your description here
+                name 'cs-scenarios-sdk'
+                description = 'Scenarios SDK project powered by Ceska Sporitelna a.s.'
+                url 'https://github.com/Ceskasporitelna/cs-scenarios-sdk-droid'
+
+                // Set your license
+                licenses {
+                    license {
+                        name 'The Apache Software License, Version 2.0'
+                        url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                    }
+                }
+                developers {
+                    developer {
+                        id 'hauseja3'
+                        name 'Jan Hauser'
+                        email 'jan.hauser@applifting.cz'
+                    }
+                }
+                scm {
+                    connection 'https://github.com/Ceskasporitelna/cs-scenarios-sdk-droid.git'
+                    developerConnection 'https://github.com/Ceskasporitelna/cs-scenarios-sdk-droid.git'
+                    url 'https://github.com/Ceskasporitelna/cs-scenarios-sdk-droid'
+                }
+            }
+        }
+    }
 }
 
 // Thanks to https://medium.com/@kmlong1183/using-fastlane-tools-and-android-2e8d76bb138b#.ew4kj88sa
@@ -98,7 +143,25 @@ def incrementBuildVersion(def type = "patch") {
         stream.close()
     }
 
-    println "Version is now: {" + major + "." + minor + "." + patch + "}"
+    // fix descriptor.json bintray file version
+
+    def descriptorFile = new File(project.rootDir, "descriptor.json")
+    def descriptor = new JsonSlurper().parse(descriptorFile)
+    def versionName = major + "." + minor + "." + patch
+    def projectName = descriptor.files[0].uploadPattern.split("/")[2];
+    def path = "cz/csas/" + projectName + "/" + versionName + "/";
+
+    descriptor.version.name = versionName
+    descriptor.version.vcs_tag = versionName
+    descriptor.version.released = new Date().format('yyyy-MM-dd')
+
+    descriptor.files[0].uploadPattern = path + "\$1";
+    descriptor.files[1].uploadPattern = path + projectName + "-" + versionName + ".aar";
+    descriptor.files[2].uploadPattern = path + projectName + "-" + versionName + ".pom";
+
+    descriptorFile.write(new JsonBuilder(descriptor).toPrettyString())
+
+    println "Version is now: {" + versionName + "}"
 }
 
 task doMajorVersionIncrement << {
@@ -114,4 +177,29 @@ task doMinorVersionIncrement << {
 task doPatchVersionIncrement << {
     println "Incrementing patch version..."
     incrementBuildVersion("patch")
+}
+
+// generate the javadoc and sources https://code.tutsplus.com/tutorials/creating-and-publishing-an-android-library--cms-24582#
+
+task sourcesJar(type: Jar) {
+    baseName = "cs-scenarios-sdk"
+    from android.sourceSets.main.java.srcDirs
+    classifier = 'sources'
+}
+
+task javadoc(type: Javadoc) {
+    source = android.sourceSets.main.java.srcDirs
+    classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
+    failOnError false
+}
+
+task javadocJar(type: Jar, dependsOn: javadoc) {
+    baseName = "cs-scenarios-sdk"
+    classifier = 'javadoc'
+    from javadoc.destinationDir
+}
+
+artifacts {
+    archives javadocJar
+    archives sourcesJar
 }
