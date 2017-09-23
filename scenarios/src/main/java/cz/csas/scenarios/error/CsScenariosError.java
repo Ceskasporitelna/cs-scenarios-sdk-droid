@@ -9,7 +9,7 @@ public class CsScenariosError extends CsScenariosSDKError {
 
     public enum Kind {
 
-        NOT_INITIALIZED("Scenarios not initialized. Initialization is required before requesting API client.");
+        BAD_INITIALIZATION("Scenarios not initialized. Required initialization fields are missing.");
 
         private String message;
 
