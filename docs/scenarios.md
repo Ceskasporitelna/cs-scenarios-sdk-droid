@@ -62,7 +62,7 @@ You can post a single event using `EventsResource` method `postSingle`. See also
 
 ### 2. Post collection of events
 
-You can post a collection of events using `EventsResource` method `postCollection`. See also [`Events`](../scenarios/src/main/java/cz/csas/scenarios/model/Event.java) for creation the single event (note `Builder` is available).
+You can post a collection of events using `EventsResource` method `postCollection`. See also [`Event`](../scenarios/src/main/java/cz/csas/scenarios/model/Event.java) for creation the single event (note `Builder` is available).
 
 ``` java
 

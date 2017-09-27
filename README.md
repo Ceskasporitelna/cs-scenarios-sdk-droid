@@ -13,7 +13,25 @@ This SDK allows you to post events into Česká spořitelna a.s. [Scenarios API]
 ## Install
 You can install CsTransparentAccSDK using the following gradle settings.
 
-TBD
+1. Check your project build.gradle file that it contains `JCenter` repository:
+```gradle
+    allprojects {
+        repositories {
+            ...
+            jcenter()
+            ...
+        }
+    }
+```
+
+2. Insert these lines into your module build.gradle file to compile CSScenariosSDK  (change x.y.z to the version you want to use):
+```gradle
+    dependencies {
+        ...
+        compile 'cz.csas:cs-scenarios-sdk:x.y.z@aar'
+        ...
+    }
+```
 
 # Usage
 
@@ -23,13 +41,17 @@ After you've installed the SDK you will be able to use the module in your projec
 Before using ScenariosSDK in your application, you need to initialize it by providing it your WebApiKey:
 
 ```java
-    // Set your WebApi key
-    CoreSDK.getInstance().useWebApiKey( "YourApiKey" )
-    // Initialize transparent-acc
-    // Only if you haven't set up WebApiConfiguration for CoreSDK
-    TransparentAccounts.getInstance().init(WebApiConfiguration);
-    //Obtain your TransparentAccountsClient
-    TransparentAccountsClient client = TransparentAccounts.getInstance().getTransparentAccountsClient();
+    
+    // Initialize scenarios
+    WebApiConfiguration webApiConfiguration = new WebApiConfiguration.Builder().setWebApiKey("your-api-key")
+                    .setEnvironment("your-environment") // default is Environment.SYSTEM_TEST
+                    .setAuthorizationToken("your-auth-token")
+                    .setLanguage("your-language") // default is "cs-CZ"
+                    .create();
+    Scenarios.getInstance().init(webApiConfiguration);
+    
+    // Obtain your ScenariosClient
+    ScenariosClient client = Scenarios.getInstance().getScenariosClient();
 
 ```
 
@@ -39,7 +61,7 @@ Before using ScenariosSDK in your application, you need to initialize it by prov
 ## Proguard
 The ScenariosSDK Proguard additions are necessary to be specified besides the recommended Android Proguard configuration.
 
-**See [consumer-proguard-rules.pro](./transparent_acc/consumer-proguard-rules.pro).
+**See [consumer-proguard-rules.pro](./scenarios/consumer-proguard-rules.pro).
 
 
 # Contributing
