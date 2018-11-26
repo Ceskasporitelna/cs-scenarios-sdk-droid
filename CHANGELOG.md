@@ -4,6 +4,7 @@
 
 ### Fixes
 - (TOOLING) Update tooling to remove potential vulnerability
+- Update build tools and android api support
 
 ## [1.0.0] - 2017-09-25
 
