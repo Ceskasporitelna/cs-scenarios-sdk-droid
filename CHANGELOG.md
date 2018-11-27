@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+## [1.0.1] - 2018-11-27
+
 ### Fixes
 - (TOOLING) Update tooling to remove potential vulnerability
 - Update build tools and android api support
